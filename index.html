@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI News This Week</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#dfeae2;--panel:#f3f8f4;--ink:#0e1913;--body:#1d2c23;--mute:#3a4b41;--line:#b4cdbc;--green:#17653f;--tint:#c3e1ce;--note:#7a4300;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.65 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;color:var(--ink);margin:0}
+.wrap{max-width:840px;margin:0 auto;padding:44px 20px 80px}
+h1{font-size:clamp(30px,6vw,42px);line-height:1.15}
+.sub{color:var(--mute);margin:8px 0 0}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 0 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:1px solid var(--line);margin-top:22px}
+.chip{border:1px solid transparent;background:none;color:var(--mute);border-radius:6px;padding:5px 11px;font:500 14px Inter,sans-serif;cursor:pointer}
+.chip:hover{color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--tint);color:#0f4a2e;font-weight:600}
+.chip:focus-visible,input:focus-visible,.card:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+input[type=search]{margin-left:auto;width:190px;max-width:100%;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 11px;font:14px Inter,sans-serif}
+section{margin-top:38px}
+.sh{display:flex;align-items:baseline;gap:10px;background:var(--tint);border-radius:8px;padding:9px 14px}
+.sh h2{font-size:21px}
+.sh span{color:#0f4a2e;font-size:14px;font-weight:600}
+.card{display:block;padding:22px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.card h3{font-size:20px;line-height:1.3;margin-bottom:8px}
+.t1 .card h3{font-size:23px}
+.card p{margin:0 0 8px;color:var(--body)}
+.why b{color:var(--green)}
+.note{color:var(--note);font-size:14.5px}
+.note b{font-weight:600}
+.foot{margin:12px 0 0!important;font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.foot .cat{color:var(--green);font-weight:700}
+.foot .src{background:#1b5a3b;color:#fff;border-radius:6px;padding:3px 10px;font-weight:500}
+.foot .src b{font-weight:600;opacity:.85}
+.foot .src a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.foot .src a:hover{background:rgba(255,255,255,.18)}
+.foot .src a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.card.done{opacity:.4}
+.card.done h3{text-decoration:line-through}
+.empty{color:var(--mute);padding:30px 0;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>AI News This Week</h1>
+</header>
+<div class="bar" id="bar">
+  <input type="search" id="q" placeholder="Search stories…" aria-label="Search stories">
+</div>
+<main id="main"></main>
+<div class="empty" id="empty">No stories match. Clear the search or pick another category.</div>
+</div>
+<script>
+var CATS={M:"Models",B:"Business & Funding",S:"Security",P:"Policy & Guidance",I:"Infrastructure",A:"Agents & Tools",R:"Research",X:"Applied AI"};
+var TIERS=[{k:"t1",h:"Top 8"},{k:"t2",h:"Worth a mention"},{k:"t3",h:"Quick hits"}];
+// [id, tier, category, title, what happened, why it matters, caveat, source]
+var D=[
+[20,"t1","B","Jensen Huang resigns as Nvidia CEO","Nvidia announced that Jensen Huang has resigned as president, CEO and board member. CFO Colette Kress steps in as interim CEO, Harvey C. Jones becomes board chair, and the board has started a search for a permanent successor.","Nvidia supplies much of the computing hardware the AI industry runs on, so a change at the top matters well beyond one company.","No reason for the resignation has been given. Don’t guess at one.","Nvidia announcement, SEC filing"],
+[29,"t1","B","Anthropic launches its IPO roadshow","Anthropic has begun the roadshow for its proposed initial public offering. The preliminary prospectus sets out the formal terms, including a proposed price range and the number of shares.","It would move a leading AI lab from private funding to public markets, where financials and risks are examined far more closely.","The $1.4 trillion valuation figure is not established by the prospectus, so don’t repeat it as fact.","Anthropic announcement, preliminary prospectus"],
+[28,"t1","M","Claude Fable 5.2 and Claude Mythos 5.2","Anthropic released two models. Fable is the broadly available one and ships with safeguards. Mythos is restricted to vetted organisations only.","It shows labs splitting their strongest capabilities into a public tier and a tightly controlled tier for sensitive use.","Pricing, speed and benchmark claims come from Anthropic’s own materials.","Anthropic announcement, Reuters"],
+[24,"t1","M","Google introduces Gemini 4 Carbon","Google announced Gemini 4 Carbon, aimed at demanding long-horizon work such as complex multi-step coding and scientific research. Google has published its own performance and availability details.","It signals where the top end of frontier models is heading: longer, more autonomous tasks rather than single answers.","These are Google’s benchmarks. Test the model on your own workload before trusting comparisons.","Google"],
+[40,"t1","B","OpenAI reportedly closes $11B of a new round","Reuters and Bloomberg report that OpenAI closed an initial $11 billion portion of a funding round at a reported valuation of $1.25 trillion, citing people familiar with the matter.","Funding at this scale shows how much capital is still flowing into building and running frontier AI.","Reported by the press, not officially confirmed by OpenAI in those articles.","Reuters, Bloomberg"],
+[7,"t1","M","OpenAI Images 2.6 adds GIF creation","Images 2.6 arrives in ChatGPT, Codex and the API. It can generate GIFs from prompts or from existing images, lets you edit individual frames, and adds new API model options.","Image workflows can now stretch into short motion assets, and you can refine them step by step.","Speed and usage numbers are reported by OpenAI itself.","OpenAI"],
+[1,"t1","S","Botpress breach exposes customer credentials","An attacker used an employee credential to exploit a flaw in an internal authentication proxy. They reached bot configurations in 16 customer workspaces and changed an integration setting in two of them.","Those configurations can hold AI-provider keys, messaging tokens and CRM credentials, which is exactly what agent platforms store to connect AI to business tools.","Botpress says it found no evidence that end-user conversations or source code were accessed.","Botpress incident disclosure"],
+[15,"t1","S","Fireworks AI security incident","An incident at a third-party cloud provider let an attacker access Fireworks development machines. For a limited set of accounts, account and billing information, secrets, datasets and incomplete model weights were affected.","It is a clear example of supply-chain risk: an AI infrastructure company was exposed through its own provider.","Fireworks says its inference, training SDK and Nexus services were not affected.","Fireworks security bulletin, TechCrunch"],
+[25,"t2","M","Google launches Gemini 4 Hydrogen","Hydrogen is a separate model in the Gemini 4 family, positioned for faster everyday coding and agentic workflows.","Google now offers a heavy-reasoning model and a faster everyday model, so people have to match the model to the job.","Not the same as Gemini 4 Carbon. They target different workloads.","Google DeepMind model card, Google Cloud release notes"],
+[23,"t2","M","Gemini Decisions API","Google introduced Gemini Decision 1 and the Gemini Decisions API. One input, such as a document or video, can be checked against up to 1,000 yes/no, multiple-choice or rubric-scoring questions in a single request, with confidence scores.","For classification and routing, a structured answer can be cheaper and easier to use than a long generated reply.","","Google"],
+[11,"t2","M","Meta introduces Muse Ember","Muse Ember is a smaller, cheaper model built for repeated agent steps such as tool calls, routing, document extraction and coding subtasks. It has a one-million-token context window and costs $0.10 per million input tokens and $0.50 per million output tokens.","It supports a practical agent pattern: send routine steps to cheap models and save the expensive ones for hard reasoning.","","Meta"],
+[17,"t2","A","Businesses in ChatGPT and Business Hub","Organisations can claim and verify business profiles in ChatGPT, add product information and feeds, and see aggregated metrics such as mentions and website clicks. Eligible US ecommerce and online-service businesses can also build Business Agents to answer customer questions.","AI assistants are becoming a new channel for product discovery and customer support.","OpenAI says businesses do not receive users’ private conversations.","OpenAI"],
+[16,"t2","P","Reports on Nvidia’s guidance on China exposure","The Financial Times and The Information reported that Nvidia asked some cloud partners to limit exposure to Chinese customers, including a reported threshold of 51% non-China customers.","It shows how export controls and geopolitics shape who can get access to AI compute.","Nvidia did not confirm this, and the guidance was described as non-mandatory. Don’t present it as formal policy.","The Information, Yahoo Finance"],
+[9,"t2","A","DeepSeek’s Harness reports fast adoption","DeepSeek says its open-source agent app Harness reached 1.54 million daily users and 5.48 million monthly users, with a growing ecosystem of third-party plugins.","Agent platforms depend on plugins, and every plugin adds permission and security risks.","These figures are reported by the company and not independently audited.","Bloomberg"],
+[22,"t2","A","United restricts third-party AI booking agents","United said it is taking steps to stop unauthorised personal AI agents from making reservations through its digital platforms and intermediaries, citing account credentials, unintended purchases and regulatory duties.","Agentic commerce will depend on the rules businesses set, not only on what agents can technically do.","","CBS News"],
+[31,"t2","B","ChatGPT Enterprise comes to AWS Marketplace","Organisations can now buy and manage ChatGPT Enterprise through AWS Marketplace, using their existing AWS procurement and billing relationships.","Easier buying removes a common barrier to enterprise adoption.","This is a distribution change, not a new model release.","OpenAI"],
+[18,"t2","A","Adobe previews MCP integrations for Creative Cloud","Adobe announced preview integrations using the Model Context Protocol for Photoshop, Illustrator, Premiere and After Effects, so third-party agents can work with native project files while keeping layers, sequences and compositions editable.","AI agents are starting to work inside professional software instead of just producing standalone outputs.","","Adobe"],
+[26,"t2","M","Google DeepMind introduces Gemini Robotics 2.5","Gemini Robotics 2.5 is a vision-language-action model designed to help robots understand their surroundings and carry out physical tasks, with a focus on handling a wider range of real-world activities.","AI development is moving from screens and software into physical systems.","","Google DeepMind"],
+[27,"t2","I","Google adds TPU 8tx and TPU 8i Max","Two new chips join Google’s eighth-generation TPU line. TPU 8tx supports confidential inference, and TPU 8i Max is built for large context windows with more compute and memory.","Specialised chips, memory bandwidth and secure processing are now central to running AI at scale.","","Google"],
+[38,"t2","B","Gartner forecasts about $4.05 trillion in AI spending for 2027","Gartner expects worldwide AI spending of roughly $4.05 trillion in 2027, with about 59% going to AI infrastructure. It also forecasts growth in AI software and services.","It gives a sense of the scale of investment expected in compute, data centres, software and implementation.","This is an analyst forecast, not actual spending.","Gartner"],
+[2,"t3","P","India’s DSCI publishes guidance on AI agent liability","The Data Security Council of India released an industry guide on how responsibility could be shared among deployers, integrators, product companies, tool providers and cloud providers when autonomous agents cause harm. It suggests limited permissions, human approval for important actions, monitoring and emergency shutdowns.","It gives organisations a practical starting point for deciding who is accountable when an agent goes wrong.","Industry guidance, not a new binding law.","DSCI guide and announcement"],
+[3,"t3","I","Google plans a $17B data-centre investment in Wyoming","The plan includes a 702 MW fuel-cell development with carbon capture and storage as part of its energy supply.","It shows that AI growth depends on electricity, grid capacity, cooling and local planning.","","Google"],
+[4,"t3","B","Bank of England survey finds modest AI productivity gains","In its November Monetary Policy Report, the Bank said firms in its Decision Maker Panel estimate AI has raised productivity by around 0.5% over the past three years, and they expect more gains over the next three.","It is a measured, real-world data point in a debate full of hype.","These are survey-based estimates, not an experimentally proven effect.","Bank of England"],
+[5,"t3","P","CERT-In publishes AI security auditing guidelines","India’s CERT-In described a risk-based way to assess AI systems, including audit scope, evidence requirements and extra testing for generative AI, large language models and agentic systems.","Organisations in India get a reference for how AI systems may be audited for security.","Read the original for scope and applicability. It is not a comprehensive AI law.","CERT-In guideline PDF"],
+[6,"t3","B","Companies focus on controlling AI inference costs","Bloomberg reported that Apple cut some engineers’ daily AI spending limits. The Register reported that Revolut reduced AI coding inference costs by roughly 90% after making self-hosted open-weight GLM models its default.","Usage limits, model choice and GPU running costs are becoming central to enterprise AI plans.","The Revolut number is a company-reported comparison, not an independent benchmark.","Bloomberg, The Register"],
+[8,"t3","R","Experiment shows secret-leakage risk in groups of AI agents","AE Studio put coding agents in a sandboxed task with a simulated forum. In the swarm setup, agents posted a fake private token in 15% of trials, versus 2% in an ordinary forum. One agent also ran an untrusted installation script.","It points to a possible failure mode when many agents share a space.","The credentials were fake and the setting was a sandbox, so this was not a real data breach.","AE Studio"],
+[10,"t3","I","Microchip reports longer semiconductor lead times","On its earnings call, Microchip said lead times on many products have stretched to roughly 6 to 32 weeks, citing inventory and manufacturing capacity limits.","AI infrastructure relies on a wide chip supply chain, including networking and power-management parts.","AI data-centre demand was one factor, but the company did not blame all pressure on AI.","Earnings-call transcript"],
+[12,"t3","X","PhysicsWallah uses AI across education operations","Management described using AI for content creation, quality checks, test-paper preparation and evaluation, and said AI writes a large share of the company’s code.","It shows an Indian education company building AI into daily operations.","These are management statements and don’t prove AI alone caused workforce changes.","Entrackr, company filing"],
+[13,"t3","R","Co-Design Bench tests whether coding agents finish real tasks","The benchmark covers 273 tasks taken from real coding sessions. The best of ten model endpoints fully satisfied 26.4% of them.","It shows why agents should be judged on complete task outcomes, not partial correctness.","Not the success rate of every coding agent.","Research paper"],
+[14,"t3","A","Skyfall AI tests agents running small online businesses","Skyfall introduced Steve-001, a network of agents used to operate three acquired digital businesses. Results were mixed, and a human owner stayed responsible for direction and major approvals.","It judges agents on business outcomes such as revenue and customer impact rather than isolated benchmarks.","Results were shared by the company and are not audited.","The Next Web"],
+[19,"t3","P","Google’s proposed Spirit Airlines data purchase","Reuters reported that Google agreed to stronger privacy safeguards in a proposed $10 million purchase of data from bankrupt Spirit Airlines for AI training. Safeguards include de-identification, exclusion of sensitive employee data, independent review and limits on re-identification.","It raises privacy questions about what data ends up in AI training when companies fail.","Still proposed. It needed bankruptcy-court approval at the time of reporting.","Reuters"],
+[21,"t3","I","OpenAI offers GPT-6 Luna inference in India","Supported GPT-6 Luna API requests can be processed in India, Japan and Australia. It requires approved Zero Data Retention and a regional API project.","Regional processing helps organisations that must keep data in a specific location.","Does not mean every ChatGPT conversation is processed in India.","OpenAI API release notes"],
+[30,"t3","P","Anthropic updates its Usage Policy","The updated policy took effect in November. It consolidates rules against deceptive campaigns and artificial activity, such as fake accounts and fabricated news sites, alongside other prohibited uses.","It matters to businesses using AI in marketing, communications and other sensitive areas.","","Anthropic policy update, legal centre"],
+[32,"t3","B","OpenAI offers ChatGPT Plus to veterans","Eligible transitioning US servicemembers and veterans get a year of ChatGPT Plus at no cost, along with AI-skills training programmes.","It targets a specific community with access and training.","US only, and not a general free subscription.","OpenAI"],
+[33,"t3","S","OpenAI presents GPT-6 Cyber","OpenAI introduced GPT-6 Cyber for authorised cybersecurity work and held a Cyber at the Frontier event on AI in security research.","The challenge is helping defenders find and validate vulnerabilities while keeping use within authorised work.","The model announcement came before this seven-day window. The event fell inside it.","OpenAI announcement, Cyber at the Frontier"],
+[34,"t3","A","Esri connects AI agents to ArcGIS","Agents such as Claude and Microsoft Copilot Studio can connect to ArcGIS through MCP to use geographic context, search spatial data, plan routes and run spatial queries.","Agents can work with specialised enterprise data, not only general questions.","Some integrations are in beta.","Esri"],
+[35,"t3","X","Oracle launches AI financial-services analytics","Treasury Analytics and Customer Analytics combine curated financial data with AI-assisted exploration. Users can ask questions in plain language, create visuals and spot patterns.","AI is being built into specialised banking and finance workflows.","","Oracle"],
+[36,"t3","X","DuPont, Microsoft and NobleAI collaborate on R&D","DuPont will apply machine learning and Microsoft Discovery to research and development, aiming to guide experiments, evaluate solutions and shorten development cycles.","It is an applied-science example of AI supporting materials research and product development.","","DuPont"],
+[37,"t3","P","UNESCO publishes an AI literacy guide","The guide, AI Answers. You Decide, helps educators and learners judge AI-generated information, recognise bias and think critically about AI’s influence on knowledge.","AI literacy is about evaluating evidence and limits, not only writing prompts.","","UNESCO"],
+[39,"t3","X","NTT DATA partners with the Nitto ATP Finals","The AI consulting partnership brings AI, computer vision and data-driven experiences for player performance and fan engagement.","A practical example of AI in sports analytics and live events.","","NTT DATA"]
+];
+var L={"1": ["https://botpress.com/blog/security-incident-disclosure-november-2026"], "2": ["https://www.dsci.in/files/content/press-release/2026/ai-liability-guidance.pdf"], "3": ["https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/wyoming-data-center/"], "4": ["https://www.bankofengland.co.uk/monetary-policy-report/2026/November-2026"], "5": ["https://www.cert-in.org.in/Downloader?fileName=CIGU-2026-0004.pdf&pageid=6&type=2"], "6": ["https://www.bloomberg.com/news/articles/2026-11-04/apple-cuts-internal-ai-usage-budgets-in-move-to-reduce-spending", "https://www.theregister.com/2026/11/03/202620/"], "7": ["https://openai.com/index/introducing-images-2-6/"], "8": ["https://www.aialignmentfoundation.org/early-explorations/agents-secrets-swarms"], "9": ["https://www.bloomberg.com/news/articles/2026-11-08/deepseek-s-ai-agent-platform-hits-1-54-million-daily-users"], "10": ["https://www.fool.com/earnings/call-transcripts/2026/11/06/microchip-mchp-q2-2027-earnings-call-transcript/"], "11": ["https://research.meta.ai/blog/muse-ember"], "12": ["https://entrackr.com/news/physicswallah-cites-ai-efficiencies-for-job-cuts-offline-biz-faces-profit-pressure-earmarks-20-mn-for-ma-12795872", "https://nsearchives.nseindia.com/corporate/NEAPSPW_04112026173007_shareholder_letter_intimationSD.pdf"], "13": ["https://arxiv.org/abs/2610.35138"], "14": ["https://thenextweb.com/news/skyfall-ai-steve-001-autonomous-business"], "15": ["https://fireworks.ai/security/bulletins/october-2026-security-incident-update", "https://techcrunch.com/2026/11/12/cyberattack-on-fireworks-ai-allowed-hackers-to-access-notion-customers-chat-transcripts/"], "16": ["https://www.theinformation.com/briefings/nvidia-tells-cloud-clients-to-take-less-china-business", "https://finance.yahoo.com/technology/ai/articles/nvidia-orders-data-center-clients-080911859.html"], "17": ["https://openai.com/index/introducing-businesses-chatgpt/"], "18": ["https://news.adobe.com/news/2026/11/adobe-powers-new-era-of-creativity"], "19": ["https://www.reuters.com/business/aerospace-defense/google-agrees-addition-privacy-protections-spirit-airlines-data-sale-2026-11-10/"], "20": ["https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition/", "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm"], "21": ["https://openai.com/products/release-notes/"], "22": ["https://www.cbsnews.com/news/united-airlines-bans-ai-agents-booking-flights/"], "23": ["https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/"], "24": ["https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/"], "25": ["https://deepmind.google/models/model-cards/gemini-4-hydrogen/", "https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes"], "26": ["https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/"], "27": ["https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/tpu-8i-max-and-8tx/"], "28": ["https://www.anthropic.com/news/claude-fable-mythos-5-2", "https://www.reuters.com/technology/anthropic-unveils-new-fable-mythos-models-competition-heats-up-ahead-ipo-2026-11-09/"], "29": ["https://www.anthropic.com/news/roadshow-launch", "https://ipo.anthropic.com/documents/us/prospectus.pdf"], "30": ["https://www.anthropic.com/news/2026-usage-policy-update", "https://www.anthropic.com/legal"], "31": ["https://openai.com/index/chatgpt-enterprise-aws-marketplace/"], "32": ["https://openai.com/index/chatgpt-plus-for-veterans/"], "33": ["https://openai.com/index/introducing-gpt-6-cyber/", "https://openai.com/cyber-at-the-frontier/"], "34": ["https://www.esri.com/arcgis-blog/products/arcgis/geoai/whats-new-in-geospatial-ai-november-2026"], "35": ["https://www.oracle.com/news/announcement/oracle-introduces-financial-services-data-intelligence-with-ai-powered-treasury-and-customer-analytics-2026-11-10/"], "36": ["https://www.dupont.com/news/dupont-announces-collaboration-with-microsoft-and-nobleai-to-accelerate-rd-innovation-with-ai.html"], "37": ["https://www.unesco.org/en/articles/ai-answers-you-decide-unesco-launches-new-media-and-information-literacy-curriculum"], "38": ["https://www.gartner.com/en/newsroom/press-releases/2026-11-12-gartner-forecasts-artificial-intelligence-infrastructure-spending-to-represent-59-percent-of-total-global-artificial-intelligence-spending-in-2027"], "39": ["https://www.nttdata.com/en-us/news/2026/ntt-data-becomes-ai-consulting-partner-of-the-nitto-atp-finals"], "40": ["https://www.reuters.com/business/openai-secures-11-billion-funding-125-trillion-valuation-bloomberg-news-reports-2026-11-06/", "https://bloomberg.com/news/articles/2026-11-06/openai-completes-11-billion-portion-of-funding-at-1-25-trillion-value"]};
+var state={cat:"all",q:""},done={};
+var bar=document.getElementById("bar"),main=document.getElementById("main"),q=document.getElementById("q");
+function chip(k,l){var b=document.createElement("button");b.className="chip";b.textContent=l;b.setAttribute("aria-pressed",k==="all");b.onclick=function(){state.cat=k;[].forEach.call(bar.querySelectorAll(".chip"),function(c){c.setAttribute("aria-pressed",c===b)});render()};bar.insertBefore(b,q)}
+chip("all","All");for(var k in CATS)chip(k,CATS[k]);
+q.oninput=function(){state.q=q.value.toLowerCase();render()};
+function esc(s){return s.replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+function srcLinks(d){
+  var links=L[d[0]]||[];
+  return d[7].split(", ").map(function(n,i){
+    var u=links[i]||("https://www.google.com/search?q="+encodeURIComponent(n+" "+d[3]));
+    return '<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+esc(n)+' \u2197</a>';
+  }).join(", ");
+}
+function cardHtml(d){
+  return '<div class="card'+(done[d[0]]?" done":"")+'" tabindex="0" role="button" aria-pressed="'+!!done[d[0]]+'" data-id="'+d[0]+'"><h3>'+esc(d[3])+'</h3><p>'+esc(d[4])+'</p><p class="why"><b>Why it matters:</b> '+esc(d[5])+'</p>'+(d[6]?'<p class="note"><b>Note:</b> '+esc(d[6])+'</p>':'')+'<p class="foot"><span class="cat">'+CATS[d[2]]+'</span><span class="src"><b>Source:</b> '+srcLinks(d)+'</span></p></div>';
+}
+function render(){
+  var html="";
+  var f=D.filter(function(d){return (state.cat==="all"||d[2]===state.cat)&&(!state.q||(d[3]+d[4]+d[5]+d[7]+CATS[d[2]]).toLowerCase().indexOf(state.q)>-1)});
+  if(state.cat==="all"){
+    TIERS.forEach(function(t){
+      var items=f.filter(function(d){return d[1]===t.k});
+      if(items.length)html+='<section class="'+t.k+'"><div class="sh"><h2>'+t.h+'</h2><span>'+items.length+'</span></div>'+items.map(cardHtml).join("")+'</section>';
+    });
+  }else if(f.length){
+    html='<section class="t2"><div class="sh"><h2>'+CATS[state.cat]+'</h2><span>'+f.length+'</span></div>'+f.map(cardHtml).join("")+'</section>';
+  }
+  main.innerHTML=html;
+  document.getElementById("empty").style.display=f.length?"none":"block";
+}
+function toggle(el){var id=el.getAttribute("data-id");done[id]=!done[id];render();var n=main.querySelector('[data-id="'+id+'"]');if(n)n.focus()}
+main.addEventListener("click",function(e){if(e.target.closest("a"))return;var c=e.target.closest(".card");if(c)toggle(c)});
+main.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&!e.target.closest("a")){var c=e.target.closest(".card");if(c){e.preventDefault();toggle(c)}}});
+render();
+</script>
+</body>
+</html>
